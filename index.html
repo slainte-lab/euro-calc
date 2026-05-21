@@ -268,10 +268,14 @@
 
       <div class="field">
         <label>
-          Кредо EUR/USD
-          <a href="https://credobank.ge/en/currency" target="_blank" rel="noopener">↗</a>
+          <span>Кредо EUR/USD <span id="credo-tag" class="auto-tag"></span></span>
+          <span style="display:flex;align-items:center;gap:5px">
+            <button class="ref-btn" id="credo-btn" onclick="fetchCredo()" title="Обновить">↻</button>
+            <a href="https://credobank.ge/en/currency" target="_blank" rel="noopener">↗</a>
+          </span>
         </label>
-        <input type="number" id="credo-rate" placeholder="1.1555" step="0.0001" min="0">
+        <input type="number" id="credo-rate" placeholder="1.1690" step="0.0001" min="0">
+        <div id="credo-hint" style="font-size:0.68rem;color:#a0aec0;margin-top:3px"></div>
       </div>
 
     </div>
@@ -421,6 +425,60 @@ function calc() {
 ['eur-need','bystr-eur','bystr-usd','korona-usd','credo-rate']
   .forEach(id => $(id).addEventListener('input', calc));
 
+// ── Credo auto-fetch ─────────────────────────
+const CREDO_API_KEY = '1caf66f7cb78b05b448629ba93c0c93eefd0d03b6876cf0f';
+
+async function fetchCredo() {
+  const btn = $('credo-btn');
+  btn.classList.add('spin');
+  btn.disabled = true;
+
+  const date = new Date().toISOString();
+  const target = `https://n1.noxtton.com/v2/credo/current-rates?method=FxRatesCommercial&date=${date}`;
+
+  let data = null;
+  for (const url of [
+    'https://corsproxy.io/?' + encodeURIComponent(target),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(target),
+    target  // direct last (will likely fail CORS but worth trying)
+  ]) {
+    try {
+      const res = await fetch(url, {
+        headers: { 'x-api-key': CREDO_API_KEY },
+        signal: AbortSignal.timeout(6000)
+      });
+      if (!res.ok) continue;
+      data = await res.json();
+      if (data?.rates) break;
+    } catch (_) { /* try next */ }
+  }
+
+  btn.classList.remove('spin');
+  btn.disabled = false;
+
+  const tag  = $('credo-tag');
+  const hint = $('credo-hint');
+
+  if (data?.rates) {
+    const usd = data.rates.find(r => r.fromCcy === 'USD');
+    const eur = data.rates.find(r => r.fromCcy === 'EUR');
+    if (usd && eur) {
+      const rate = eur.sell / usd.buy;  // GEL per EUR / GEL per USD = USD per EUR
+      $('credo-rate').value = rate.toFixed(4);
+      const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      tag.textContent = `✓ ${t}`;
+      tag.className   = 'auto-tag';
+      hint.textContent = `USD купля ${usd.buy} GEL · EUR продажа ${eur.sell} GEL`;
+      calc();
+      return;
+    }
+  }
+
+  tag.textContent = '✗ нет данных';
+  tag.className   = 'auto-tag err';
+  hint.textContent = 'введите вручную с credobank.ge/en/currency';
+}
+
 // ── Bystrobank auto-fetch ─────────────────────
 const BYSTR_URL = 'https://www.bystrobank.ru/sitecurrency/data/CurrentExchangeRates_izhevsk.js';
 const PROXY     = 'https://corsproxy.io/?';
@@ -466,6 +524,7 @@ async function fetchBystro() {
 }
 
 fetchBystro();
+fetchCredo();
 calc();
 </script>
 </body>
