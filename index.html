@@ -31,7 +31,6 @@
       margin-bottom: 22px;
     }
 
-    /* ── Card ── */
     .card {
       background: white;
       border-radius: 14px;
@@ -48,21 +47,18 @@
       margin-bottom: 14px;
     }
 
-    /* ── Bank block ── */
     .bank-block { margin-bottom: 14px; }
     .bank-block:last-child { margin-bottom: 0; }
 
     .bank-hd {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       margin-bottom: 9px;
     }
     .bank-ico {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-      object-fit: contain;
+      width: 22px;
+      height: 22px;
       flex-shrink: 0;
     }
     .bank-hd-name {
@@ -72,14 +68,12 @@
       flex: 1;
     }
 
-    /* ── Two-bank row ── */
     .bank-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
 
-    /* ── Fields ── */
     .fields-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -106,7 +100,6 @@
     .field input:focus { border-color: #4299e1; }
     .field input::placeholder { color: #cbd5e0; font-weight: 400; font-size: 0.95rem; }
 
-    /* ── EUR target ── */
     .target-row {
       display: flex;
       align-items: center;
@@ -118,11 +111,7 @@
       color: #4a5568;
       white-space: nowrap;
     }
-    .target-row .inp-wrap {
-      display: flex;
-      align-items: center;
-      flex: 1;
-    }
+    .target-row .inp-wrap { display: flex; align-items: center; flex: 1; }
     .target-row input {
       flex: 1;
       border: 2px solid #e2e8f0;
@@ -143,7 +132,6 @@
       margin-left: 9px;
     }
 
-    /* ── Results ── */
     .results { display: flex; flex-direction: column; gap: 10px; }
 
     .res-card {
@@ -188,13 +176,8 @@
       text-overflow: ellipsis;
       min-width: 0;
     }
-    .res-ico {
-      width: 14px;
-      height: 14px;
-      border-radius: 2px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
+    .res-ico { width: 15px; height: 15px; flex-shrink: 0; }
+
     .res-rub {
       font-size: 1.65rem;
       font-weight: 700;
@@ -205,20 +188,9 @@
     .res-card.winner .res-rub { color: #276749; }
     .res-card.second .res-rub { color: #744210; }
 
-    .res-right {
-      text-align: right;
-      flex-shrink: 0;
-    }
-    .res-rate {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #2d3748;
-    }
-    .res-rate-label {
-      font-size: 0.7rem;
-      color: #a0aec0;
-      margin-top: 2px;
-    }
+    .res-right { text-align: right; flex-shrink: 0; }
+    .res-rate { font-size: 1.05rem; font-weight: 700; color: #2d3748; }
+    .res-rate-label { font-size: 0.7rem; color: #a0aec0; margin-top: 2px; }
 
     .win-badge, .sec-badge {
       position: absolute;
@@ -232,7 +204,6 @@
     .win-badge { background: #68d391; color: #22543d; }
     .sec-badge { background: #f6e05e; color: #744210; }
 
-    /* ── Verdict ── */
     .verdict {
       background: white;
       border-radius: 12px;
@@ -245,11 +216,7 @@
     .verdict b { color: #2d3748; font-size: 1rem; }
     .verdict .vs { font-size: 0.78rem; color: #a0aec0; margin-top: 4px; }
 
-    .auto-tag {
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: #68d391;
-    }
+    .auto-tag { font-size: 0.65rem; font-weight: 600; color: #68d391; }
     .auto-tag.err { color: #fc8181; }
 
     .ref-btn {
@@ -267,17 +234,46 @@
     .ref-btn.spin { animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .ext-link {
-      color: #4299e1;
-      text-decoration: none;
-      font-size: 0.72rem;
-    }
+    .ext-link { color: #4299e1; text-decoration: none; font-size: 0.72rem; }
     .ext-link:hover { color: #2b6cb0; }
-
     .sep { height: 1px; background: #f0f4f8; margin: 14px 0; }
   </style>
 </head>
 <body>
+
+<!-- ── Inline SVG logos (no external requests) ─────────────────── -->
+<svg style="display:none" aria-hidden="true">
+
+  <!-- BystroBank: orange background, white right arrow -->
+  <symbol id="ico-bystr" viewBox="0 0 24 24">
+    <rect width="24" height="24" rx="5" fill="#F5891A"/>
+    <path d="M5 12h14M13 7l6 5-6 5"
+          stroke="white" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+
+  <!-- Korona: coral background, white 3-peak crown -->
+  <symbol id="ico-korona" viewBox="0 0 24 24">
+    <rect width="24" height="24" rx="5" fill="#D93E2A"/>
+    <path d="M4 17 L8 9.5 L11 13 L12 7.5 L13 13 L16 9.5 L20 17 Z" fill="white"/>
+    <rect x="3.5" y="16" width="17" height="3" rx="1.5" fill="white"/>
+  </symbol>
+
+  <!-- Credo: blue background, white circular sync arrows -->
+  <symbol id="ico-credo" viewBox="0 0 24 24">
+    <rect width="24" height="24" rx="5" fill="#0070BF"/>
+    <path d="M5 12A7 7 0 0 1 19 12"
+          stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M19 12 L17.5 10 M19 12 L20.5 10"
+          stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M19 12A7 7 0 0 1 5 12"
+          stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M5 12 L3.5 14 M5 12 L6.5 14"
+          stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+
+</svg>
+
 <div class="wrap">
 
   <h1>Калькулятор EUR</h1>
@@ -290,10 +286,7 @@
     <!-- BystroBank -->
     <div class="bank-block">
       <div class="bank-hd">
-        <img class="bank-ico"
-             src="https://logo.clearbit.com/bystrobank.ru"
-             onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=bystrobank.ru&sz=32'"
-             alt="">
+        <svg class="bank-ico"><use href="#ico-bystr"/></svg>
         <span class="bank-hd-name">Быстробанк</span>
         <span id="bystr-tag" class="auto-tag"></span>
         <button class="ref-btn" id="bystr-btn" onclick="fetchBystro()" title="Обновить">↻</button>
@@ -318,10 +311,7 @@
 
       <div class="bank-block" style="margin-bottom:0">
         <div class="bank-hd">
-          <img class="bank-ico"
-               src="https://logo.clearbit.com/koronapay.com"
-               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=koronapay.com&sz=32'"
-               alt="">
+          <svg class="bank-ico"><use href="#ico-korona"/></svg>
           <span class="bank-hd-name">Корона</span>
           <a class="ext-link" href="https://koronapay.com/transfers/europe/?receivingCountryId=ge" target="_blank" rel="noopener">↗</a>
         </div>
@@ -333,18 +323,17 @@
 
       <div class="bank-block" style="margin-bottom:0">
         <div class="bank-hd">
-          <img class="bank-ico"
-               src="https://logo.clearbit.com/credobank.ge"
-               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=credobank.ge&sz=32'"
-               alt="">
+          <svg class="bank-ico"><use href="#ico-credo"/></svg>
           <span class="bank-hd-name">Кредо</span>
           <span id="credo-tag" class="auto-tag"></span>
           <button class="ref-btn" id="credo-btn" onclick="fetchCredo()" title="Обновить">↻</button>
           <a class="ext-link" href="https://credobank.ge/en/currency" target="_blank" rel="noopener">↗</a>
         </div>
         <div class="field">
-          <label>EUR / USD</label>
-          <input type="number" id="credo-rate" placeholder="1.1690" step="0.0001" min="0">
+          <!-- User enters the rate they SEE on the Credo app: 1 USD = X EUR -->
+          <!-- Calculation inverts it internally: 1 EUR = 1/X USD              -->
+          <label>1 USD =</label>
+          <input type="number" id="credo-rate" placeholder="0.856" step="0.0001" min="0">
           <div id="credo-hint" style="font-size:0.68rem;color:#a0aec0;margin-top:3px"></div>
         </div>
       </div>
@@ -370,10 +359,7 @@
       <div class="res-num">1</div>
       <div class="res-body">
         <div class="res-name">
-          <img class="res-ico"
-               src="https://logo.clearbit.com/bystrobank.ru"
-               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=bystrobank.ru&sz=32'"
-               alt="">
+          <svg class="res-ico"><use href="#ico-bystr"/></svg>
           <span>EUR нал — Быстробанк</span>
         </div>
         <div class="res-rub" id="rub1">—</div>
@@ -388,14 +374,8 @@
       <div class="res-num">2</div>
       <div class="res-body">
         <div class="res-name">
-          <img class="res-ico"
-               src="https://logo.clearbit.com/bystrobank.ru"
-               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=bystrobank.ru&sz=32'"
-               alt="">
-          <img class="res-ico"
-               src="https://logo.clearbit.com/credobank.ge"
-               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=credobank.ge&sz=32'"
-               alt="">
+          <svg class="res-ico"><use href="#ico-bystr"/></svg>
+          <svg class="res-ico"><use href="#ico-credo"/></svg>
           <span>USD Быстробанк → Кредо</span>
         </div>
         <div class="res-rub" id="rub2">—</div>
@@ -410,14 +390,8 @@
       <div class="res-num">3</div>
       <div class="res-body">
         <div class="res-name">
-          <img class="res-ico"
-               src="https://logo.clearbit.com/koronapay.com"
-               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=koronapay.com&sz=32'"
-               alt="">
-          <img class="res-ico"
-               src="https://logo.clearbit.com/credobank.ge"
-               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=credobank.ge&sz=32'"
-               alt="">
+          <svg class="res-ico"><use href="#ico-korona"/></svg>
+          <svg class="res-ico"><use href="#ico-credo"/></svg>
           <span>Корона → Кредо</span>
         </div>
         <div class="res-rub" id="rub3">—</div>
@@ -448,7 +422,11 @@ function calc() {
   const bystrEur  = n('bystr-eur');
   const bystrUsd  = n('bystr-usd');
   const koronaUsd = n('korona-usd');
-  const credoRate = n('credo-rate');
+
+  // credo-rate field holds "1 USD = X EUR" (what user reads on the Credo app/website)
+  // We need EUR-per-USD → invert to USD-per-EUR for the calculation
+  const credoRaw  = n('credo-rate');             // e.g. 0.856
+  const credoRate = credoRaw > 0 ? 1 / credoRaw : 0; // → 1.168 USD per EUR
 
   const rub1 = (bystrEur > 0 && eur > 0) ? eur * bystrEur : 0;
   const rub2 = (bystrUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * bystrUsd : 0;
@@ -478,10 +456,7 @@ function calc() {
   });
 
   const valid = cards.filter(c => c.rub > 0);
-  if (valid.length < 2) {
-    $('verdict').innerHTML = 'Введите курсы выше';
-    return;
-  }
+  if (valid.length < 2) { $('verdict').innerHTML = 'Введите курсы выше'; return; }
 
   const sorted = [...valid].sort((a, b) => a.rub - b.rub);
 
@@ -548,12 +523,13 @@ async function fetchCredo() {
     const usd = data.rates.find(r => r.fromCcy === 'USD');
     const eur = data.rates.find(r => r.fromCcy === 'EUR');
     if (usd && eur) {
-      const rate = eur.sell / usd.buy;
+      // Fill with "1 USD = X EUR" — matches what user sees on credobank.ge
+      const rate = usd.buy / eur.sell;
       $('credo-rate').value = rate.toFixed(4);
       const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
       tag.textContent = `✓ ${t}`;
       tag.className   = 'auto-tag';
-      hint.textContent = `1 USD = ${(usd.buy / eur.sell).toFixed(4)} EUR`;
+      hint.textContent = `→ 1 EUR = ${(1 / rate).toFixed(4)} USD`;
       calc();
       return;
     }
