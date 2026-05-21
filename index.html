@@ -56,9 +56,16 @@
       gap: 7px;
       margin-bottom: 9px;
     }
+    /* square icon (SVG or small img) */
     .bank-ico {
       width: 22px;
       height: 22px;
+      flex-shrink: 0;
+    }
+    /* full horizontal / brand logo */
+    .bank-logo {
+      height: 22px;
+      width: auto;
       flex-shrink: 0;
     }
     .bank-hd-name {
@@ -286,9 +293,9 @@
     <!-- BystroBank -->
     <div class="bank-block">
       <div class="bank-hd">
-        <svg class="bank-ico"><use href="#ico-bystr"/></svg>
-        <span class="bank-hd-name">Быстробанк</span>
-        <span id="bystr-tag" class="auto-tag"></span>
+        <!-- logo already contains the bank name -->
+        <img class="bank-logo" src="img/bystr.png" alt="Быстробанк">
+        <span id="bystr-tag" class="auto-tag" style="margin-left:2px"></span>
         <button class="ref-btn" id="bystr-btn" onclick="fetchBystro()" title="Обновить">↻</button>
         <a class="ext-link" href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
       </div>
@@ -311,7 +318,7 @@
 
       <div class="bank-block" style="margin-bottom:0">
         <div class="bank-hd">
-          <svg class="bank-ico"><use href="#ico-korona"/></svg>
+          <img class="bank-ico" src="img/korona.png" alt="Корона" style="border-radius:6px">
           <span class="bank-hd-name">Корона</span>
           <a class="ext-link" href="https://koronapay.com/transfers/europe/?receivingCountryId=ge" target="_blank" rel="noopener">↗</a>
         </div>
