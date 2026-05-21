@@ -204,6 +204,29 @@
     }
     .verdict b { color: #2d3748; font-size: 1rem; }
     .verdict .vs { font-size: 0.78rem; color: #a0aec0; margin-top: 4px; }
+
+    .auto-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #68d391;
+      margin-left: 3px;
+    }
+    .auto-tag.err { color: #fc8181; }
+
+    .ref-btn {
+      background: none;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      color: #718096;
+      font-size: 0.8rem;
+      padding: 1px 5px;
+      cursor: pointer;
+      line-height: 1.4;
+      transition: background 0.15s;
+    }
+    .ref-btn:hover { background: #edf2f7; }
+    .ref-btn.spin { animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -219,16 +242,18 @@
 
       <div class="field">
         <label>
-          Быстробанк EUR/RUB
-          <a href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
+          <span>Быстробанк EUR/RUB <span id="bystr-tag" class="auto-tag"></span></span>
+          <span style="display:flex;align-items:center;gap:5px">
+            <button class="ref-btn" id="bystr-btn" onclick="fetchBystro()" title="Обновить">↻</button>
+            <a href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
+          </span>
         </label>
         <input type="number" id="bystr-eur" placeholder="89.29" step="0.01" min="0">
       </div>
 
       <div class="field">
         <label>
-          Быстробанк USD/RUB
-          <a href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
+          <span>Быстробанк USD/RUB <span id="bystr-tag2" class="auto-tag"></span></span>
         </label>
         <input type="number" id="bystr-usd" placeholder="73.49" step="0.01" min="0">
       </div>
@@ -396,6 +421,51 @@ function calc() {
 ['eur-need','bystr-eur','bystr-usd','korona-usd','credo-rate']
   .forEach(id => $(id).addEventListener('input', calc));
 
+// ── Bystrobank auto-fetch ─────────────────────
+const BYSTR_URL = 'https://www.bystrobank.ru/sitecurrency/data/CurrentExchangeRates_izhevsk.js';
+const PROXY     = 'https://corsproxy.io/?';
+
+async function fetchBystro() {
+  const btn = $('bystr-btn');
+  btn.classList.add('spin');
+  btn.disabled = true;
+
+  let data = null;
+
+  // Try direct first, then via CORS proxy
+  for (const url of [BYSTR_URL, PROXY + encodeURIComponent(BYSTR_URL)]) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) continue;
+      data = await res.json();
+      break;
+    } catch (_) { /* try next */ }
+  }
+
+  btn.classList.remove('spin');
+  btn.disabled = false;
+
+  const tag  = $('bystr-tag');
+  const tag2 = $('bystr-tag2');
+
+  if (data?.banks?.[0]) {
+    const b = data.banks[0];
+    $('bystr-eur').value = b.eur.sale;
+    $('bystr-usd').value = b.usd.sale;
+    const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    tag.textContent  = `✓ ${t}`;
+    tag2.textContent = `✓ ${t}`;
+    tag.className    = 'auto-tag';
+    tag2.className   = 'auto-tag';
+    calc();
+  } else {
+    tag.textContent  = '✗ нет данных';
+    tag.className    = 'auto-tag err';
+    tag2.textContent = '';
+  }
+}
+
+fetchBystro();
 calc();
 </script>
 </body>
