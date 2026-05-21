@@ -320,6 +320,8 @@
         <div class="bank-hd">
           <img class="bank-ico" src="img/korona.png" alt="Корона" style="border-radius:6px">
           <span class="bank-hd-name">Корона</span>
+          <span id="korona-tag" class="auto-tag"></span>
+          <button class="ref-btn" id="korona-btn" onclick="fetchKorona()" title="Обновить">↻</button>
           <a class="ext-link" href="https://koronapay.com/transfers/europe/?receivingCountryId=ge" target="_blank" rel="noopener">↗</a>
         </div>
         <div class="field">
@@ -584,8 +586,53 @@ async function fetchBystro() {
   }
 }
 
+// ── Korona auto-fetch ─────────────────────────────────────────
+const KORONA_URL = 'https://xn-----7kchhgf9amyjqnfnj7l3b2a.xn--p1ai/api/chart-data.php?bank_id=2003&city_id=3762&currency_id=12&currency_code=usd&days=7';
+const KORONA_SURCHARGE = 1.06;
+
+async function fetchKorona() {
+  const btn = $('korona-btn');
+  btn.classList.add('spin');
+  btn.disabled = true;
+
+  let data = null;
+  for (const url of [
+    'https://corsproxy.io/?' + encodeURIComponent(KORONA_URL),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(KORONA_URL),
+    KORONA_URL,
+  ]) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) continue;
+      data = await res.json();
+      if (data?.sellRates) break;
+    } catch (_) { /* try next */ }
+  }
+
+  btn.classList.remove('spin');
+  btn.disabled = false;
+
+  const tag = $('korona-tag');
+
+  if (data?.sellRates) {
+    const lastRate = [...data.sellRates].reverse().find(v => v !== null);
+    if (lastRate !== undefined) {
+      $('korona-usd').value = (lastRate + KORONA_SURCHARGE).toFixed(2);
+      const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      tag.textContent = `✓ ${t}`;
+      tag.className   = 'auto-tag';
+      calc();
+      return;
+    }
+  }
+
+  tag.textContent = '✗ нет данных';
+  tag.className   = 'auto-tag err';
+}
+
 fetchBystro();
 fetchCredo();
+fetchKorona();
 calc();
 </script>
 </body>
