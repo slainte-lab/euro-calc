@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор EUR</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    .wrap { max-width: 480px; margin: 0 auto; }
+
+    h1 {
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      margin-bottom: 22px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #a0aec0;
+      margin-bottom: 13px;
+    }
+
+    /* ── Rate grid ── */
+    .rate-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+    }
+
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.75rem;
+      color: #718096;
+      margin-bottom: 5px;
+    }
+    .field label a {
+      color: #4299e1;
+      text-decoration: none;
+      font-size: 0.7rem;
+    }
+    .field input {
+      width: 100%;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1a202c;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: #4299e1; }
+    .field input::placeholder { color: #cbd5e0; font-weight: 400; font-size: 0.95rem; }
+
+    /* ── EUR target ── */
+    .target-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .target-row label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #4a5568;
+      white-space: nowrap;
+    }
+    .target-row .inp-wrap {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+    .target-row input {
+      flex: 1;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #1a202c;
+      outline: none;
+      min-width: 0;
+      transition: border-color 0.15s;
+    }
+    .target-row input:focus { border-color: #4299e1; }
+    .target-row .sym {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #a0aec0;
+      margin-left: 9px;
+    }
+
+    /* ── Results table ── */
+    .results { display: flex; flex-direction: column; gap: 10px; }
+
+    .res-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 3px solid transparent;
+      transition: border-color 0.25s, opacity 0.25s;
+      position: relative;
+    }
+    .res-card.winner { border-color: #68d391; }
+    .res-card.loser  { opacity: 0.45; }
+
+    .res-num {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #cbd5e0;
+      width: 18px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .res-card.winner .res-num { color: #68d391; }
+
+    .res-body { flex: 1; min-width: 0; }
+    .res-name {
+      font-size: 0.82rem;
+      color: #718096;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .res-rub {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #1a202c;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+    .res-card.winner .res-rub { color: #276749; }
+
+    .res-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .res-rate {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #2d3748;
+    }
+    .res-rate-label {
+      font-size: 0.7rem;
+      color: #a0aec0;
+      margin-top: 2px;
+    }
+
+    .win-badge {
+      position: absolute;
+      top: -1px; right: 14px;
+      background: #68d391;
+      color: #22543d;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 0 0 8px 8px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Verdict ── */
+    .verdict {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 14px 18px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #718096;
+    }
+    .verdict b { color: #2d3748; font-size: 1rem; }
+    .verdict .vs { font-size: 0.78rem; color: #a0aec0; margin-top: 4px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Калькулятор EUR</h1>
+  <p class="subtitle">Три маршрута — одно сравнение</p>
+
+  <!-- Rates -->
+  <div class="card">
+    <div class="card-title">Курсы</div>
+    <div class="rate-grid">
+
+      <div class="field">
+        <label>
+          Быстробанк EUR/RUB
+          <a href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
+        </label>
+        <input type="number" id="bystr-eur" placeholder="89.29" step="0.01" min="0">
+      </div>
+
+      <div class="field">
+        <label>
+          Быстробанк USD/RUB
+          <a href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
+        </label>
+        <input type="number" id="bystr-usd" placeholder="73.49" step="0.01" min="0">
+      </div>
+
+      <div class="field">
+        <label>
+          Корона USD/RUB
+          <a href="https://koronapay.com/transfers/europe/?receivingCountryId=ge" target="_blank" rel="noopener">↗</a>
+        </label>
+        <input type="number" id="korona-usd" placeholder="75.42" step="0.01" min="0">
+      </div>
+
+      <div class="field">
+        <label>
+          Кредо EUR/USD
+          <a href="https://credobank.ge/en/currency" target="_blank" rel="noopener">↗</a>
+        </label>
+        <input type="number" id="credo-rate" placeholder="1.1555" step="0.0001" min="0">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Target -->
+  <div class="card">
+    <div class="target-row">
+      <label for="eur-need">Нужно:</label>
+      <div class="inp-wrap">
+        <input type="number" id="eur-need" value="1000" min="0" step="100">
+        <span class="sym">€</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results">
+
+    <div class="res-card" id="rc1">
+      <div class="res-num">1</div>
+      <div class="res-body">
+        <div class="res-name">EUR нал — Быстробанк</div>
+        <div class="res-rub" id="rub1">—</div>
+      </div>
+      <div class="res-right">
+        <div class="res-rate" id="rate1">—</div>
+        <div class="res-rate-label">₽/€</div>
+      </div>
+    </div>
+
+    <div class="res-card" id="rc2">
+      <div class="res-num">2</div>
+      <div class="res-body">
+        <div class="res-name">USD Быстробанк → Кредо (нал на карту)</div>
+        <div class="res-rub" id="rub2">—</div>
+      </div>
+      <div class="res-right">
+        <div class="res-rate" id="rate2">—</div>
+        <div class="res-rate-label">₽/€</div>
+      </div>
+    </div>
+
+    <div class="res-card" id="rc3">
+      <div class="res-num">3</div>
+      <div class="res-body">
+        <div class="res-name">RUB через Корону → Кредо</div>
+        <div class="res-rub" id="rub3">—</div>
+      </div>
+      <div class="res-right">
+        <div class="res-rate" id="rate3">—</div>
+        <div class="res-rate-label">₽/€</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Verdict -->
+  <div class="verdict" id="verdict" style="margin-top:14px">
+    Введите курсы выше
+  </div>
+
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const n = id => { const v = parseFloat($(id).value); return isFinite(v) && v > 0 ? v : 0; };
+
+const rubFmt  = x => Math.round(x).toLocaleString('ru-RU');
+const rateFmt = x => x.toFixed(2);
+
+function calc() {
+  const eur       = n('eur-need');
+  const bystrEur  = n('bystr-eur');
+  const bystrUsd  = n('bystr-usd');
+  const koronaUsd = n('korona-usd');
+  const credoRate = n('credo-rate');   // USD за 1 EUR в Кредо
+
+  // Route 1: EUR cash at Bystrobank
+  const rub1 = (bystrEur > 0 && eur > 0) ? eur * bystrEur : 0;
+
+  // Route 2: buy USD at Bystrobank → Korona → exchange to EUR at Credo
+  // Need eur * credoRate USD at Credo; buy them at Bystrobank
+  const rub2 = (bystrUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * bystrUsd : 0;
+
+  // Route 3: send RUB via Korona → receive USD at Korona rate → exchange to EUR at Credo
+  const rub3 = (koronaUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * koronaUsd : 0;
+
+  // Effective rates (RUB per 1 EUR)
+  const effRate1 = rub1 > 0 ? rub1 / eur : 0;
+  const effRate2 = rub2 > 0 ? rub2 / eur : 0;
+  const effRate3 = rub3 > 0 ? rub3 / eur : 0;
+
+  // Display amounts
+  [['rub1', rub1], ['rub2', rub2], ['rub3', rub3]].forEach(([id, val]) => {
+    $(id).textContent = val > 0 ? rubFmt(val) + ' ₽' : '—';
+  });
+
+  // Display rates
+  [['rate1', effRate1], ['rate2', effRate2], ['rate3', effRate3]].forEach(([id, val]) => {
+    $(id).textContent = val > 0 ? rateFmt(val) : '—';
+  });
+
+  // Winner logic
+  const cards = [
+    { id: 'rc1', rub: rub1, label: 'EUR нал Быстробанк' },
+    { id: 'rc2', rub: rub2, label: 'USD Быстробанк → Кредо' },
+    { id: 'rc3', rub: rub3, label: 'Корона → Кредо' },
+  ];
+
+  cards.forEach(c => {
+    const el = $(c.id);
+    el.classList.remove('winner', 'loser');
+    el.querySelectorAll('.win-badge').forEach(e => e.remove());
+  });
+
+  const valid = cards.filter(c => c.rub > 0);
+  if (valid.length < 2) {
+    $('verdict').innerHTML = 'Введите курсы выше';
+    return;
+  }
+
+  const minRub  = Math.min(...valid.map(c => c.rub));
+  const winner  = valid.find(c => c.rub === minRub);
+  const others  = valid.filter(c => c.rub !== minRub);
+
+  $(winner.id).classList.add('winner');
+  $(winner.id).insertAdjacentHTML('beforeend', '<div class="win-badge">ВЫГОДНЕЕ</div>');
+  others.forEach(c => $(c.id).classList.add('loser'));
+
+  // Verdict vs worst
+  const maxRub = Math.max(...valid.map(c => c.rub));
+  const diff   = maxRub - minRub;
+  const pct    = (diff / maxRub * 100).toFixed(1);
+
+  const vsLines = others.map(c => {
+    const d = c.rub - minRub;
+    const p = (d / c.rub * 100).toFixed(1);
+    return `<div class="vs">vs ${c.label}: −${rubFmt(d)} ₽ (−${p}%)</div>`;
+  }).join('');
+
+  $('verdict').innerHTML =
+    `<b>${winner.label}</b> — дешевле всего:<br>` +
+    `<b>${rubFmt(minRub)} ₽</b> за ${eur} EUR (курс ${rateFmt(minRub/eur)} ₽/€)` +
+    vsLines;
+}
+
+['eur-need','bystr-eur','bystr-usd','korona-usd','credo-rate']
+  .forEach(id => $(id).addEventListener('input', calc));
+
+calc();
+</script>
+</body>
+</html>
