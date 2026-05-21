@@ -45,28 +45,52 @@
       text-transform: uppercase;
       letter-spacing: 0.8px;
       color: #a0aec0;
-      margin-bottom: 13px;
+      margin-bottom: 14px;
     }
 
-    /* ── Rate grid ── */
-    .rate-grid {
+    /* ── Bank block ── */
+    .bank-block { margin-bottom: 14px; }
+    .bank-block:last-child { margin-bottom: 0; }
+
+    .bank-hd {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 9px;
+    }
+    .bank-ico {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .bank-hd-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #4a5568;
+      flex: 1;
+    }
+
+    /* ── Two-bank row ── */
+    .bank-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* ── Fields ── */
+    .fields-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 11px;
     }
 
     .field label {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 0.75rem;
+      display: block;
+      font-size: 0.72rem;
       color: #718096;
       margin-bottom: 5px;
-    }
-    .field label a {
-      color: #4299e1;
-      text-decoration: none;
-      font-size: 0.7rem;
     }
     .field input {
       width: 100%;
@@ -119,7 +143,7 @@
       margin-left: 9px;
     }
 
-    /* ── Results table ── */
+    /* ── Results ── */
     .results { display: flex; flex-direction: column; gap: 10px; }
 
     .res-card {
@@ -135,7 +159,8 @@
       position: relative;
     }
     .res-card.winner { border-color: #68d391; }
-    .res-card.loser  { opacity: 0.45; }
+    .res-card.second { border-color: #f6e05e; }
+    .res-card.loser  { opacity: 0.42; }
 
     .res-num {
       font-size: 0.65rem;
@@ -146,15 +171,29 @@
       text-align: center;
     }
     .res-card.winner .res-num { color: #68d391; }
+    .res-card.second .res-num { color: #d69e2e; }
 
     .res-body { flex: 1; min-width: 0; }
     .res-name {
       font-size: 0.82rem;
       color: #718096;
       margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .res-name span {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .res-ico {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      object-fit: contain;
+      flex-shrink: 0;
     }
     .res-rub {
       font-size: 1.65rem;
@@ -164,6 +203,7 @@
       line-height: 1;
     }
     .res-card.winner .res-rub { color: #276749; }
+    .res-card.second .res-rub { color: #744210; }
 
     .res-right {
       text-align: right;
@@ -180,17 +220,17 @@
       margin-top: 2px;
     }
 
-    .win-badge {
+    .win-badge, .sec-badge {
       position: absolute;
       top: -1px; right: 14px;
-      background: #68d391;
-      color: #22543d;
       font-size: 0.62rem;
       font-weight: 800;
       padding: 2px 8px;
       border-radius: 0 0 8px 8px;
       letter-spacing: 0.5px;
     }
+    .win-badge { background: #68d391; color: #22543d; }
+    .sec-badge { background: #f6e05e; color: #744210; }
 
     /* ── Verdict ── */
     .verdict {
@@ -209,7 +249,6 @@
       font-size: 0.65rem;
       font-weight: 600;
       color: #68d391;
-      margin-left: 3px;
     }
     .auto-tag.err { color: #fc8181; }
 
@@ -227,6 +266,15 @@
     .ref-btn:hover { background: #edf2f7; }
     .ref-btn.spin { animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ext-link {
+      color: #4299e1;
+      text-decoration: none;
+      font-size: 0.72rem;
+    }
+    .ext-link:hover { color: #2b6cb0; }
+
+    .sep { height: 1px; background: #f0f4f8; margin: 14px 0; }
   </style>
 </head>
 <body>
@@ -238,44 +286,67 @@
   <!-- Rates -->
   <div class="card">
     <div class="card-title">Курсы</div>
-    <div class="rate-grid">
 
-      <div class="field">
-        <label>
-          <span>Быстробанк EUR/RUB <span id="bystr-tag" class="auto-tag"></span></span>
-          <span style="display:flex;align-items:center;gap:5px">
-            <button class="ref-btn" id="bystr-btn" onclick="fetchBystro()" title="Обновить">↻</button>
-            <a href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
-          </span>
-        </label>
-        <input type="number" id="bystr-eur" placeholder="89.29" step="0.01" min="0">
+    <!-- BystroBank -->
+    <div class="bank-block">
+      <div class="bank-hd">
+        <img class="bank-ico"
+             src="https://logo.clearbit.com/bystrobank.ru"
+             onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=bystrobank.ru&sz=32'"
+             alt="">
+        <span class="bank-hd-name">Быстробанк</span>
+        <span id="bystr-tag" class="auto-tag"></span>
+        <button class="ref-btn" id="bystr-btn" onclick="fetchBystro()" title="Обновить">↻</button>
+        <a class="ext-link" href="https://www.bystrobank.ru/" target="_blank" rel="noopener">↗</a>
+      </div>
+      <div class="fields-2">
+        <div class="field">
+          <label>EUR / RUB</label>
+          <input type="number" id="bystr-eur" placeholder="89.29" step="0.01" min="0">
+        </div>
+        <div class="field">
+          <label>USD / RUB</label>
+          <input type="number" id="bystr-usd" placeholder="73.49" step="0.01" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Korona + Credo -->
+    <div class="bank-row">
+
+      <div class="bank-block" style="margin-bottom:0">
+        <div class="bank-hd">
+          <img class="bank-ico"
+               src="https://logo.clearbit.com/koronapay.com"
+               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=koronapay.com&sz=32'"
+               alt="">
+          <span class="bank-hd-name">Корона</span>
+          <a class="ext-link" href="https://koronapay.com/transfers/europe/?receivingCountryId=ge" target="_blank" rel="noopener">↗</a>
+        </div>
+        <div class="field">
+          <label>USD / RUB</label>
+          <input type="number" id="korona-usd" placeholder="75.42" step="0.01" min="0">
+        </div>
       </div>
 
-      <div class="field">
-        <label>
-          <span>Быстробанк USD/RUB <span id="bystr-tag2" class="auto-tag"></span></span>
-        </label>
-        <input type="number" id="bystr-usd" placeholder="73.49" step="0.01" min="0">
-      </div>
-
-      <div class="field">
-        <label>
-          Корона USD/RUB
-          <a href="https://koronapay.com/transfers/europe/?receivingCountryId=ge" target="_blank" rel="noopener">↗</a>
-        </label>
-        <input type="number" id="korona-usd" placeholder="75.42" step="0.01" min="0">
-      </div>
-
-      <div class="field">
-        <label>
-          <span>Кредо EUR/USD <span id="credo-tag" class="auto-tag"></span></span>
-          <span style="display:flex;align-items:center;gap:5px">
-            <button class="ref-btn" id="credo-btn" onclick="fetchCredo()" title="Обновить">↻</button>
-            <a href="https://credobank.ge/en/currency" target="_blank" rel="noopener">↗</a>
-          </span>
-        </label>
-        <input type="number" id="credo-rate" placeholder="1.1690" step="0.0001" min="0">
-        <div id="credo-hint" style="font-size:0.68rem;color:#a0aec0;margin-top:3px"></div>
+      <div class="bank-block" style="margin-bottom:0">
+        <div class="bank-hd">
+          <img class="bank-ico"
+               src="https://logo.clearbit.com/credobank.ge"
+               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=credobank.ge&sz=32'"
+               alt="">
+          <span class="bank-hd-name">Кредо</span>
+          <span id="credo-tag" class="auto-tag"></span>
+          <button class="ref-btn" id="credo-btn" onclick="fetchCredo()" title="Обновить">↻</button>
+          <a class="ext-link" href="https://credobank.ge/en/currency" target="_blank" rel="noopener">↗</a>
+        </div>
+        <div class="field">
+          <label>EUR / USD</label>
+          <input type="number" id="credo-rate" placeholder="1.1690" step="0.0001" min="0">
+          <div id="credo-hint" style="font-size:0.68rem;color:#a0aec0;margin-top:3px"></div>
+        </div>
       </div>
 
     </div>
@@ -298,7 +369,13 @@
     <div class="res-card" id="rc1">
       <div class="res-num">1</div>
       <div class="res-body">
-        <div class="res-name">EUR нал — Быстробанк</div>
+        <div class="res-name">
+          <img class="res-ico"
+               src="https://logo.clearbit.com/bystrobank.ru"
+               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=bystrobank.ru&sz=32'"
+               alt="">
+          <span>EUR нал — Быстробанк</span>
+        </div>
         <div class="res-rub" id="rub1">—</div>
       </div>
       <div class="res-right">
@@ -310,7 +387,17 @@
     <div class="res-card" id="rc2">
       <div class="res-num">2</div>
       <div class="res-body">
-        <div class="res-name">USD Быстробанк → Кредо (нал на карту)</div>
+        <div class="res-name">
+          <img class="res-ico"
+               src="https://logo.clearbit.com/bystrobank.ru"
+               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=bystrobank.ru&sz=32'"
+               alt="">
+          <img class="res-ico"
+               src="https://logo.clearbit.com/credobank.ge"
+               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=credobank.ge&sz=32'"
+               alt="">
+          <span>USD Быстробанк → Кредо</span>
+        </div>
         <div class="res-rub" id="rub2">—</div>
       </div>
       <div class="res-right">
@@ -322,7 +409,17 @@
     <div class="res-card" id="rc3">
       <div class="res-num">3</div>
       <div class="res-body">
-        <div class="res-name">RUB через Корону → Кредо</div>
+        <div class="res-name">
+          <img class="res-ico"
+               src="https://logo.clearbit.com/koronapay.com"
+               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=koronapay.com&sz=32'"
+               alt="">
+          <img class="res-ico"
+               src="https://logo.clearbit.com/credobank.ge"
+               onerror="this.onerror=null;this.src='https://www.google.com/s2/favicons?domain=credobank.ge&sz=32'"
+               alt="">
+          <span>Корона → Кредо</span>
+        </div>
         <div class="res-rub" id="rub3">—</div>
       </div>
       <div class="res-right">
@@ -351,34 +448,23 @@ function calc() {
   const bystrEur  = n('bystr-eur');
   const bystrUsd  = n('bystr-usd');
   const koronaUsd = n('korona-usd');
-  const credoRate = n('credo-rate');   // USD за 1 EUR в Кредо
+  const credoRate = n('credo-rate');
 
-  // Route 1: EUR cash at Bystrobank
   const rub1 = (bystrEur > 0 && eur > 0) ? eur * bystrEur : 0;
-
-  // Route 2: buy USD at Bystrobank → Korona → exchange to EUR at Credo
-  // Need eur * credoRate USD at Credo; buy them at Bystrobank
   const rub2 = (bystrUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * bystrUsd : 0;
-
-  // Route 3: send RUB via Korona → receive USD at Korona rate → exchange to EUR at Credo
   const rub3 = (koronaUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * koronaUsd : 0;
 
-  // Effective rates (RUB per 1 EUR)
   const effRate1 = rub1 > 0 ? rub1 / eur : 0;
   const effRate2 = rub2 > 0 ? rub2 / eur : 0;
   const effRate3 = rub3 > 0 ? rub3 / eur : 0;
 
-  // Display amounts
   [['rub1', rub1], ['rub2', rub2], ['rub3', rub3]].forEach(([id, val]) => {
     $(id).textContent = val > 0 ? rubFmt(val) + ' ₽' : '—';
   });
-
-  // Display rates
   [['rate1', effRate1], ['rate2', effRate2], ['rate3', effRate3]].forEach(([id, val]) => {
     $(id).textContent = val > 0 ? rateFmt(val) : '—';
   });
 
-  // Winner logic
   const cards = [
     { id: 'rc1', rub: rub1, label: 'EUR нал Быстробанк' },
     { id: 'rc2', rub: rub2, label: 'USD Быстробанк → Кредо' },
@@ -387,8 +473,8 @@ function calc() {
 
   cards.forEach(c => {
     const el = $(c.id);
-    el.classList.remove('winner', 'loser');
-    el.querySelectorAll('.win-badge').forEach(e => e.remove());
+    el.classList.remove('winner', 'second', 'loser');
+    el.querySelectorAll('.win-badge, .sec-badge').forEach(e => e.remove());
   });
 
   const valid = cards.filter(c => c.rub > 0);
@@ -397,35 +483,34 @@ function calc() {
     return;
   }
 
-  const minRub  = Math.min(...valid.map(c => c.rub));
-  const winner  = valid.find(c => c.rub === minRub);
-  const others  = valid.filter(c => c.rub !== minRub);
+  const sorted = [...valid].sort((a, b) => a.rub - b.rub);
 
-  $(winner.id).classList.add('winner');
-  $(winner.id).insertAdjacentHTML('beforeend', '<div class="win-badge">ВЫГОДНЕЕ</div>');
-  others.forEach(c => $(c.id).classList.add('loser'));
+  $(sorted[0].id).classList.add('winner');
+  $(sorted[0].id).insertAdjacentHTML('beforeend', '<div class="win-badge">ВЫГОДНЕЕ</div>');
 
-  // Verdict vs worst
-  const maxRub = Math.max(...valid.map(c => c.rub));
-  const diff   = maxRub - minRub;
-  const pct    = (diff / maxRub * 100).toFixed(1);
+  $(sorted[1].id).classList.add('second');
+  $(sorted[1].id).insertAdjacentHTML('beforeend', '<div class="sec-badge">2-е место</div>');
 
-  const vsLines = others.map(c => {
+  if (sorted[2]) $(sorted[2].id).classList.add('loser');
+
+  const minRub = sorted[0].rub;
+  const vsLines = sorted.slice(1).map(c => {
     const d = c.rub - minRub;
     const p = (d / c.rub * 100).toFixed(1);
     return `<div class="vs">vs ${c.label}: −${rubFmt(d)} ₽ (−${p}%)</div>`;
   }).join('');
 
+  const eur2 = n('eur-need');
   $('verdict').innerHTML =
-    `<b>${winner.label}</b> — дешевле всего:<br>` +
-    `<b>${rubFmt(minRub)} ₽</b> за ${eur} EUR (курс ${rateFmt(minRub/eur)} ₽/€)` +
+    `<b>${sorted[0].label}</b> — дешевле всего:<br>` +
+    `<b>${rubFmt(minRub)} ₽</b> за ${eur2} EUR (курс ${rateFmt(minRub / eur2)} ₽/€)` +
     vsLines;
 }
 
 ['eur-need','bystr-eur','bystr-usd','korona-usd','credo-rate']
   .forEach(id => $(id).addEventListener('input', calc));
 
-// ── Credo auto-fetch ─────────────────────────
+// ── Credo auto-fetch ─────────────────────────────────────────
 const CREDO_API_KEY = '1caf66f7cb78b05b448629ba93c0c93eefd0d03b6876cf0f';
 
 async function fetchCredo() {
@@ -433,19 +518,19 @@ async function fetchCredo() {
   btn.classList.add('spin');
   btn.disabled = true;
 
-  const date = new Date().toISOString();
+  const date   = new Date().toISOString();
   const target = `https://n1.noxtton.com/v2/credo/current-rates?method=FxRatesCommercial&date=${date}`;
 
   let data = null;
   for (const url of [
     'https://corsproxy.io/?' + encodeURIComponent(target),
     'https://api.allorigins.win/raw?url=' + encodeURIComponent(target),
-    target  // direct last (will likely fail CORS but worth trying)
+    target,
   ]) {
     try {
       const res = await fetch(url, {
         headers: { 'x-api-key': CREDO_API_KEY },
-        signal: AbortSignal.timeout(6000)
+        signal: AbortSignal.timeout(6000),
       });
       if (!res.ok) continue;
       data = await res.json();
@@ -463,23 +548,23 @@ async function fetchCredo() {
     const usd = data.rates.find(r => r.fromCcy === 'USD');
     const eur = data.rates.find(r => r.fromCcy === 'EUR');
     if (usd && eur) {
-      const rate = eur.sell / usd.buy;  // GEL per EUR / GEL per USD = USD per EUR
+      const rate = eur.sell / usd.buy;
       $('credo-rate').value = rate.toFixed(4);
       const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
       tag.textContent = `✓ ${t}`;
       tag.className   = 'auto-tag';
-      hint.textContent = `USD купля ${usd.buy} GEL · EUR продажа ${eur.sell} GEL`;
+      hint.textContent = `1 USD = ${(usd.buy / eur.sell).toFixed(4)} EUR`;
       calc();
       return;
     }
   }
 
-  tag.textContent = '✗ нет данных';
-  tag.className   = 'auto-tag err';
-  hint.textContent = 'введите вручную с credobank.ge/en/currency';
+  tag.textContent  = '✗ нет данных';
+  tag.className    = 'auto-tag err';
+  hint.textContent = 'введите вручную · credobank.ge/en/currency';
 }
 
-// ── Bystrobank auto-fetch ─────────────────────
+// ── Bystrobank auto-fetch ─────────────────────────────────────
 const BYSTR_URL = 'https://www.bystrobank.ru/sitecurrency/data/CurrentExchangeRates_izhevsk.js';
 const PROXY     = 'https://corsproxy.io/?';
 
@@ -489,8 +574,6 @@ async function fetchBystro() {
   btn.disabled = true;
 
   let data = null;
-
-  // Try direct first, then via CORS proxy
   for (const url of [BYSTR_URL, PROXY + encodeURIComponent(BYSTR_URL)]) {
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
@@ -503,23 +586,19 @@ async function fetchBystro() {
   btn.classList.remove('spin');
   btn.disabled = false;
 
-  const tag  = $('bystr-tag');
-  const tag2 = $('bystr-tag2');
+  const tag = $('bystr-tag');
 
   if (data?.banks?.[0]) {
     const b = data.banks[0];
     $('bystr-eur').value = b.eur.sale;
     $('bystr-usd').value = b.usd.sale;
     const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-    tag.textContent  = `✓ ${t}`;
-    tag2.textContent = `✓ ${t}`;
-    tag.className    = 'auto-tag';
-    tag2.className   = 'auto-tag';
+    tag.textContent = `✓ ${t}`;
+    tag.className   = 'auto-tag';
     calc();
   } else {
-    tag.textContent  = '✗ нет данных';
-    tag.className    = 'auto-tag err';
-    tag2.textContent = '';
+    tag.textContent = '✗ нет данных';
+    tag.className   = 'auto-tag err';
   }
 }
 
