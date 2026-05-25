@@ -588,7 +588,7 @@ async function fetchBystro() {
 
 // ── Korona auto-fetch ─────────────────────────────────────────
 const KORONA_URL = 'https://xn-----7kchhgf9amyjqnfnj7l3b2a.xn--p1ai/api/chart-data.php?bank_id=2003&city_id=3762&currency_id=12&currency_code=usd&days=7';
-const KORONA_SURCHARGE = 1.06;
+const KORONA_SURCHARGE = 5;
 
 async function fetchKorona() {
   const btn = $('korona-btn');
@@ -605,7 +605,7 @@ async function fetchKorona() {
       const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
       if (!res.ok) continue;
       data = await res.json();
-      if (data?.data?.sellRates) break;
+      if (data?.data?.cbrRates) break;
     } catch (_) { /* try next */ }
   }
 
@@ -614,8 +614,8 @@ async function fetchKorona() {
 
   const tag = $('korona-tag');
 
-  if (data?.data?.sellRates) {
-    const lastRate = [...data.data.sellRates].reverse().find(v => v !== null);
+  if (data?.data?.cbrRates) {
+    const lastRate = [...data.data.cbrRates].reverse().find(v => v !== null);
     if (lastRate !== undefined) {
       $('korona-usd').value = (parseFloat(lastRate) + KORONA_SURCHARGE).toFixed(2);
       const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
