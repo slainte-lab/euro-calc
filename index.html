@@ -557,13 +557,22 @@ async function fetchBystro() {
   btn.classList.add('spin');
   btn.disabled = true;
 
+  const enc = encodeURIComponent(BYSTR_URL);
   let data = null;
-  for (const url of [BYSTR_URL, PROXY + encodeURIComponent(BYSTR_URL)]) {
+  for (const url of [
+    'https://api.codetabs.com/v1/proxy/?quest=' + BYSTR_URL,
+    'https://api.cors.lol/?url=' + enc,
+    'https://thingproxy.freeboard.io/fetch/' + BYSTR_URL,
+    'https://api.allorigins.win/get?url=' + enc,
+    PROXY + enc,
+    BYSTR_URL,
+  ]) {
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
       if (!res.ok) continue;
-      data = await res.json();
-      break;
+      let parsed = JSON.parse(await res.text());
+      if (typeof parsed?.contents === 'string') parsed = JSON.parse(parsed.contents); // allorigins /get
+      if (parsed?.banks?.[0]) { data = parsed; break; }
     } catch (_) { /* try next */ }
   }
 
