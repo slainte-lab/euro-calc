@@ -139,6 +139,23 @@
       margin-left: 9px;
     }
 
+    .results-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+    .results-2 > div { min-width: 0; }
+    .results-2 .results { gap: 8px; }
+    .results-2 .res-card { flex-direction: column; align-items: flex-start; gap: 3px; padding: 10px 11px; }
+    .results-2 .res-num { display: none; }
+    .results-2 .res-body { width: 100%; }
+    .results-2 .res-name { font-size: 0.7rem; align-items: flex-start; }
+    .results-2 .res-name span { white-space: normal; overflow: visible; }
+    .results-2 .res-ico { width: 13px; height: 13px; margin-top: 1px; }
+    .results-2 .res-rub { font-size: 1.25rem; letter-spacing: -0.3px; }
+    .results-2 .res-right { text-align: left; display: flex; align-items: baseline; gap: 4px; }
+    .results-2 .res-rate { font-size: 0.85rem; }
+    .results-2 .res-rate-label { margin-top: 0; }
+    .results-2 .verdict { padding: 10px 11px; font-size: 0.74rem; }
+    .results-2 .verdict b { font-size: 0.8rem; }
+    .results-2 .win-badge, .results-2 .sec-badge { right: 8px; font-size: 0.55rem; padding: 1px 6px; }
+    .col-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 1px; color: #a0aec0; text-transform: uppercase; margin: 0 0 8px 4px; }
     .results { display: flex; flex-direction: column; gap: 10px; }
 
     .res-card {
@@ -198,8 +215,6 @@
     .res-right { text-align: right; flex-shrink: 0; }
     .res-rate { font-size: 1.05rem; font-weight: 700; color: #2d3748; }
     .res-rate-label { font-size: 0.7rem; color: #a0aec0; margin-top: 2px; }
-    .res-usd { padding-left: 14px; border-left: 1px solid #edf2f7; min-width: 64px; }
-    .res-card.winner .res-usd .res-rate { color: #276749; }
 
     .win-badge, .sec-badge {
       position: absolute;
@@ -285,7 +300,7 @@
 <div class="wrap">
 
   <h1>Калькулятор EUR</h1>
-  <p class="subtitle">Три маршрута — одно сравнение</p>
+  <p class="subtitle">Маршруты для евро и долларов — раздельно</p>
 
   <!-- Rates -->
   <div class="card">
@@ -367,82 +382,34 @@
 
   <!-- Target -->
   <div class="card">
-    <div class="target-row">
+    <div class="target-row" style="margin-bottom:10px">
       <label for="eur-need">Нужно:</label>
       <div class="inp-wrap">
         <input type="number" id="eur-need" value="1000" min="0" step="100">
         <span class="sym">€</span>
       </div>
     </div>
+    <div class="target-row">
+      <label for="usd-need" style="visibility:hidden">Нужно:</label>
+      <div class="inp-wrap">
+        <input type="number" id="usd-need" value="1000" min="0" step="100">
+        <span class="sym">$</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Results -->
-  <div class="results">
-
-    <div class="res-card" id="rc1">
-      <div class="res-num">1</div>
-      <div class="res-body">
-        <div class="res-name">
-          <svg class="res-ico"><use href="#ico-bystr"/></svg>
-          <span>EUR нал — Быстробанк</span>
-        </div>
-        <div class="res-rub" id="rub1">—</div>
-      </div>
-      <div class="res-right">
-        <div class="res-rate" id="rate1">—</div>
-        <div class="res-rate-label">₽/€</div>
-      </div>
-      <div class="res-right res-usd">
-        <div class="res-rate" id="usd1">—</div>
-        <div class="res-rate-label">₽/$</div>
-      </div>
+  <!-- Results: two independent columns -->
+  <div class="results-2">
+    <div>
+      <div class="col-title">Евро €</div>
+      <div class="results" id="res-eur"></div>
+      <div class="verdict" id="verdict-eur" style="margin-top:14px">Введите курсы выше</div>
     </div>
-
-    <div class="res-card" id="rc2">
-      <div class="res-num">2</div>
-      <div class="res-body">
-        <div class="res-name">
-          <svg class="res-ico"><use href="#ico-bystr"/></svg>
-          <svg class="res-ico"><use href="#ico-credo"/></svg>
-          <span>USD Быстробанк → Кредо</span>
-        </div>
-        <div class="res-rub" id="rub2">—</div>
-      </div>
-      <div class="res-right">
-        <div class="res-rate" id="rate2">—</div>
-        <div class="res-rate-label">₽/€</div>
-      </div>
-      <div class="res-right res-usd">
-        <div class="res-rate" id="usd2">—</div>
-        <div class="res-rate-label">₽/$</div>
-      </div>
+    <div>
+      <div class="col-title">Доллары $</div>
+      <div class="results" id="res-usd"></div>
+      <div class="verdict" id="verdict-usd" style="margin-top:14px">Введите курсы выше</div>
     </div>
-
-    <div class="res-card" id="rc3">
-      <div class="res-num">3</div>
-      <div class="res-body">
-        <div class="res-name">
-          <svg class="res-ico"><use href="#ico-tbank"/></svg>
-          <svg class="res-ico"><use href="#ico-credo"/></svg>
-          <span>Т-Банк GEL → Кредо</span>
-        </div>
-        <div class="res-rub" id="rub3">—</div>
-      </div>
-      <div class="res-right">
-        <div class="res-rate" id="rate3">—</div>
-        <div class="res-rate-label">₽/€</div>
-      </div>
-      <div class="res-right res-usd">
-        <div class="res-rate" id="usd3">—</div>
-        <div class="res-rate-label">₽/$</div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Verdict -->
-  <div class="verdict" id="verdict" style="margin-top:14px">
-    Введите курсы выше
   </div>
 
 </div>
@@ -453,83 +420,74 @@ const n = id => { const v = parseFloat($(id).value); return isFinite(v) && v > 0
 const rubFmt  = x => Math.round(x).toLocaleString('ru-RU');
 const rateFmt = x => x.toFixed(2);
 
+const ICO = { bystr: '#ico-bystr', credo: '#ico-credo', tbank: '#ico-tbank' };
+
+// items: [{ label, icons, rub }]; cur: '€' | '$'; amount: how much of cur is needed
+function render(resId, verdictId, items, cur, amount) {
+  const host = $(resId);
+  const sorted = items.filter(i => i.rub > 0).sort((a, b) => a.rub - b.rub);
+  const rank = new Map(sorted.map((it, k) => [it, k]));
+
+  host.innerHTML = items.map((it, idx) => {
+    const k = rank.get(it);
+    const cls = k === 0 ? 'winner' : k === 1 ? 'second' : (k !== undefined && sorted.length > 2 ? 'loser' : '');
+    const badge = k === 0 ? '<div class="win-badge">ВЫГОДНЕЕ</div>' : k === 1 ? '<div class="sec-badge">2-е место</div>' : '';
+    const icons = it.icons.map(i => `<svg class="res-ico"><use href="${ICO[i]}"/></svg>`).join('');
+    return `<div class="res-card ${cls}">
+      <div class="res-num">${idx + 1}</div>
+      <div class="res-body">
+        <div class="res-name">${icons}<span>${it.label}</span></div>
+        <div class="res-rub">${it.rub > 0 ? rubFmt(it.rub) + ' ₽' : '—'}</div>
+      </div>
+      <div class="res-right">
+        <div class="res-rate">${it.rub > 0 && amount > 0 ? rateFmt(it.rub / amount) : '—'}</div>
+        <div class="res-rate-label">₽/${cur}</div>
+      </div>${badge}
+    </div>`;
+  }).join('');
+
+  const v = $(verdictId);
+  if (sorted.length < 2) { v.innerHTML = 'Введите курсы выше'; return; }
+  const min = sorted[0].rub;
+  const vs = sorted.slice(1).map(c =>
+    `<div class="vs">vs ${c.label}: −${rubFmt(c.rub - min)} ₽ (−${((c.rub - min) / c.rub * 100).toFixed(1)}%)</div>`).join('');
+  v.innerHTML = `<b>${sorted[0].label}</b> — дешевле всего:<br>` +
+    `<b>${rubFmt(min)} ₽</b> за ${amount} ${cur} (курс ${rateFmt(min / amount)} ₽/${cur})` + vs;
+}
+
 function calc() {
   const eur       = n('eur-need');
+  const usd       = n('usd-need');
   const bystrEur  = n('bystr-eur');
   const bystrUsd  = n('bystr-usd');
   const tbGel     = n('tb-gel');
   const tbAdj     = 1 + (parseFloat($('tb-adj').value) || 0) / 100;
   const eurGel    = n('credo-eurgel');
+  const usdGel    = n('credo-usdgel');
   $('tb-hint').textContent = tbGel > 0 ? `→ 1 GEL = ${(tbGel * tbAdj).toFixed(2)} ₽` : '';
 
   // credo-rate field holds "1 USD = X EUR" (what user reads on the Credo app/website)
-  // We need EUR-per-USD → invert to USD-per-EUR for the calculation
-  const credoRaw  = n('credo-rate');             // e.g. 0.856
-  const credoRate = credoRaw > 0 ? 1 / credoRaw : 0; // → 1.168 USD per EUR
+  // We need USD-per-EUR for buying EUR with USD → invert
+  const credoRaw  = n('credo-rate');
+  const credoRate = credoRaw > 0 ? 1 / credoRaw : 0;
 
-  const rub1 = (bystrEur > 0 && eur > 0) ? eur * bystrEur : 0;
-  const rub2 = (bystrUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * bystrUsd : 0;
-  // RUB → GEL via T-Bank IBAN, then GEL → EUR inside Credo
-  const rub3 = (tbGel > 0 && eurGel > 0 && eur > 0) ? eur * eurGel * tbGel * tbAdj : 0;
+  const tbRub = tbGel * tbAdj; // ₽ per 1 GEL via T-Bank IBAN
 
-  const effRate1 = rub1 > 0 ? rub1 / eur : 0;
-  const effRate2 = rub2 > 0 ? rub2 / eur : 0;
-  const effRate3 = rub3 > 0 ? rub3 / eur : 0;
+  // EUR needed
+  render('res-eur', 'verdict-eur', [
+    { label: 'EUR нал — Быстробанк',   icons: ['bystr'],          rub: bystrEur > 0 ? eur * bystrEur : 0 },
+    { label: 'USD Быстробанк → Кредо', icons: ['bystr', 'credo'], rub: bystrUsd > 0 && credoRate > 0 ? eur * credoRate * bystrUsd : 0 },
+    { label: 'Т-Банк GEL → Кредо',     icons: ['tbank', 'credo'], rub: tbRub > 0 && eurGel > 0 ? eur * eurGel * tbRub : 0 },
+  ].map(i => eur > 0 ? i : { ...i, rub: 0 }), '€', eur);
 
-  [['rub1', rub1], ['rub2', rub2], ['rub3', rub3]].forEach(([id, val]) => {
-    $(id).textContent = val > 0 ? rubFmt(val) + ' ₽' : '—';
-  });
-  [['rate1', effRate1], ['rate2', effRate2], ['rate3', effRate3]].forEach(([id, val]) => {
-    $(id).textContent = val > 0 ? rateFmt(val) : '—';
-  });
-
-  // USD rate per route: Быстробанк — его курс; Т-Банк — ₽→GEL→USD (USD куплен в Кредо за GEL)
-  const usdGel = n('credo-usdgel');
-  const usdRates = [0, bystrUsd, (tbGel > 0 && usdGel > 0) ? tbGel * tbAdj * usdGel : 0];
-  usdRates.forEach((v, i) => {
-    $('usd' + (i + 1)).textContent = v > 0 ? rateFmt(v) : '—';
-  });
-
-  const cards = [
-    { id: 'rc1', rub: rub1, label: 'EUR нал Быстробанк' },
-    { id: 'rc2', rub: rub2, label: 'USD Быстробанк → Кредо' },
-    { id: 'rc3', rub: rub3, label: 'Т-Банк GEL → Кредо' },
-  ];
-
-  cards.forEach(c => {
-    const el = $(c.id);
-    el.classList.remove('winner', 'second', 'loser');
-    el.querySelectorAll('.win-badge, .sec-badge').forEach(e => e.remove());
-  });
-
-  const valid = cards.filter(c => c.rub > 0);
-  if (valid.length < 2) { $('verdict').innerHTML = 'Введите курсы выше'; return; }
-
-  const sorted = [...valid].sort((a, b) => a.rub - b.rub);
-
-  $(sorted[0].id).classList.add('winner');
-  $(sorted[0].id).insertAdjacentHTML('beforeend', '<div class="win-badge">ВЫГОДНЕЕ</div>');
-
-  $(sorted[1].id).classList.add('second');
-  $(sorted[1].id).insertAdjacentHTML('beforeend', '<div class="sec-badge">2-е место</div>');
-
-  if (sorted[2]) $(sorted[2].id).classList.add('loser');
-
-  const minRub = sorted[0].rub;
-  const vsLines = sorted.slice(1).map(c => {
-    const d = c.rub - minRub;
-    const p = (d / c.rub * 100).toFixed(1);
-    return `<div class="vs">vs ${c.label}: −${rubFmt(d)} ₽ (−${p}%)</div>`;
-  }).join('');
-
-  const eur2 = n('eur-need');
-  $('verdict').innerHTML =
-    `<b>${sorted[0].label}</b> — дешевле всего:<br>` +
-    `<b>${rubFmt(minRub)} ₽</b> за ${eur2} EUR (курс ${rateFmt(minRub / eur2)} ₽/€)` +
-    vsLines;
+  // USD needed
+  render('res-usd', 'verdict-usd', [
+    { label: 'USD нал — Быстробанк',   icons: ['bystr'],          rub: bystrUsd > 0 ? usd * bystrUsd : 0 },
+    { label: 'Т-Банк GEL → Кредо',     icons: ['tbank', 'credo'], rub: tbRub > 0 && usdGel > 0 ? usd * usdGel * tbRub : 0 },
+  ].map(i => usd > 0 ? i : { ...i, rub: 0 }), '$', usd);
 }
 
-['eur-need','bystr-eur','bystr-usd','tb-gel','tb-adj','credo-rate','credo-eurgel','credo-usdgel']
+['eur-need','usd-need','bystr-eur','bystr-usd','tb-gel','tb-adj','credo-rate','credo-eurgel','credo-usdgel']
   .forEach(id => $(id).addEventListener('input', calc));
 
 // ── Credo auto-fetch ─────────────────────────────────────────
