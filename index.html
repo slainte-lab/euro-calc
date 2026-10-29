@@ -198,6 +198,8 @@
     .res-right { text-align: right; flex-shrink: 0; }
     .res-rate { font-size: 1.05rem; font-weight: 700; color: #2d3748; }
     .res-rate-label { font-size: 0.7rem; color: #a0aec0; margin-top: 2px; }
+    .res-usd { padding-left: 14px; border-left: 1px solid #edf2f7; min-width: 64px; }
+    .res-card.winner .res-usd .res-rate { color: #276749; }
 
     .win-badge, .sec-badge {
       position: absolute;
@@ -259,11 +261,10 @@
           stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   </symbol>
 
-  <!-- Korona: coral background, white 3-peak crown -->
-  <symbol id="ico-korona" viewBox="0 0 24 24">
-    <rect width="24" height="24" rx="5" fill="#D93E2A"/>
-    <path d="M4 17 L8 9.5 L11 13 L12 7.5 L13 13 L16 9.5 L20 17 Z" fill="white"/>
-    <rect x="3.5" y="16" width="17" height="3" rx="1.5" fill="white"/>
+  <!-- T-Bank: yellow background, dark "T" -->
+  <symbol id="ico-tbank" viewBox="0 0 24 24">
+    <rect width="24" height="24" rx="5" fill="#FFDD2D"/>
+    <path d="M6 7h12M12 7v11" stroke="#333" stroke-width="3" stroke-linecap="round" fill="none"/>
   </symbol>
 
   <!-- Credo: blue background, white circular sync arrows -->
@@ -313,20 +314,27 @@
 
     <div class="sep"></div>
 
-    <!-- Korona + Credo -->
+    <!-- T-Bank + Credo -->
     <div class="bank-row">
 
       <div class="bank-block" style="margin-bottom:0">
         <div class="bank-hd">
-          <img class="bank-ico" src="img/korona.png" alt="Корона" style="border-radius:6px">
-          <span class="bank-hd-name">Корона</span>
-          <span id="korona-tag" class="auto-tag"></span>
-          <button class="ref-btn" id="korona-btn" onclick="fetchKorona()" title="Обновить">↻</button>
-          <a class="ext-link" href="https://koronapay.com/transfers/europe/?receivingCountryId=ge" target="_blank" rel="noopener">↗</a>
+          <svg class="bank-ico" style="border-radius:6px"><use href="#ico-tbank"/></svg>
+          <span class="bank-hd-name">Т-Банк</span>
+          <span id="tb-tag" class="auto-tag"></span>
+          <button class="ref-btn" id="tb-btn" onclick="fetchTbank()" title="Обновить">↻</button>
+          <a class="ext-link" href="https://www.tbank.ru/about/exchange/" target="_blank" rel="noopener">↗</a>
         </div>
         <div class="field">
-          <label>USD / RUB</label>
-          <input type="number" id="korona-usd" placeholder="75.42" step="0.01" min="0">
+          <!-- Rate from tbank.ru/about/exchange (same backend as the page table) -->
+          <label>GEL / RUB (сайт Т-Банка)</label>
+          <input type="number" id="tb-gel" placeholder="32.58" step="0.001" min="0">
+        </div>
+        <div class="field" style="margin-top:6px">
+          <!-- App IBAN rate vs site rate: 33.47 / 32.583 ≈ +2.7 % (measured 29.10.2026) -->
+          <label>Накидка к сайту (как в приложении), %</label>
+          <input type="number" id="tb-adj" value="2.7" step="0.1" min="0">
+          <div id="tb-hint" style="font-size:0.68rem;color:#a0aec0;margin-top:3px"></div>
         </div>
       </div>
 
@@ -343,6 +351,14 @@
           <label>1 USD =</label>
           <input type="number" id="credo-rate" placeholder="0.856" step="0.0001" min="0">
           <div id="credo-hint" style="font-size:0.68rem;color:#a0aec0;margin-top:3px"></div>
+        </div>
+        <div class="field" style="margin-top:6px">
+          <label>EUR / GEL (покупка в Кредо)</label>
+          <input type="number" id="credo-eurgel" placeholder="3.15" step="0.0001" min="0">
+        </div>
+        <div class="field" style="margin-top:6px">
+          <label>USD / GEL (продажа в Кредо)</label>
+          <input type="number" id="credo-usdgel" placeholder="2.70" step="0.0001" min="0">
         </div>
       </div>
 
@@ -376,6 +392,10 @@
         <div class="res-rate" id="rate1">—</div>
         <div class="res-rate-label">₽/€</div>
       </div>
+      <div class="res-right res-usd">
+        <div class="res-rate" id="usd1">—</div>
+        <div class="res-rate-label">₽/$</div>
+      </div>
     </div>
 
     <div class="res-card" id="rc2">
@@ -392,21 +412,29 @@
         <div class="res-rate" id="rate2">—</div>
         <div class="res-rate-label">₽/€</div>
       </div>
+      <div class="res-right res-usd">
+        <div class="res-rate" id="usd2">—</div>
+        <div class="res-rate-label">₽/$</div>
+      </div>
     </div>
 
     <div class="res-card" id="rc3">
       <div class="res-num">3</div>
       <div class="res-body">
         <div class="res-name">
-          <svg class="res-ico"><use href="#ico-korona"/></svg>
+          <svg class="res-ico"><use href="#ico-tbank"/></svg>
           <svg class="res-ico"><use href="#ico-credo"/></svg>
-          <span>Корона → Кредо</span>
+          <span>Т-Банк GEL → Кредо</span>
         </div>
         <div class="res-rub" id="rub3">—</div>
       </div>
       <div class="res-right">
         <div class="res-rate" id="rate3">—</div>
         <div class="res-rate-label">₽/€</div>
+      </div>
+      <div class="res-right res-usd">
+        <div class="res-rate" id="usd3">—</div>
+        <div class="res-rate-label">₽/$</div>
       </div>
     </div>
 
@@ -429,7 +457,10 @@ function calc() {
   const eur       = n('eur-need');
   const bystrEur  = n('bystr-eur');
   const bystrUsd  = n('bystr-usd');
-  const koronaUsd = n('korona-usd');
+  const tbGel     = n('tb-gel');
+  const tbAdj     = 1 + (parseFloat($('tb-adj').value) || 0) / 100;
+  const eurGel    = n('credo-eurgel');
+  $('tb-hint').textContent = tbGel > 0 ? `→ 1 GEL = ${(tbGel * tbAdj).toFixed(2)} ₽` : '';
 
   // credo-rate field holds "1 USD = X EUR" (what user reads on the Credo app/website)
   // We need EUR-per-USD → invert to USD-per-EUR for the calculation
@@ -438,7 +469,8 @@ function calc() {
 
   const rub1 = (bystrEur > 0 && eur > 0) ? eur * bystrEur : 0;
   const rub2 = (bystrUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * bystrUsd : 0;
-  const rub3 = (koronaUsd > 0 && credoRate > 0 && eur > 0) ? eur * credoRate * koronaUsd : 0;
+  // RUB → GEL via T-Bank IBAN, then GEL → EUR inside Credo
+  const rub3 = (tbGel > 0 && eurGel > 0 && eur > 0) ? eur * eurGel * tbGel * tbAdj : 0;
 
   const effRate1 = rub1 > 0 ? rub1 / eur : 0;
   const effRate2 = rub2 > 0 ? rub2 / eur : 0;
@@ -451,10 +483,17 @@ function calc() {
     $(id).textContent = val > 0 ? rateFmt(val) : '—';
   });
 
+  // USD rate per route: Быстробанк — его курс; Т-Банк — ₽→GEL→USD (USD куплен в Кредо за GEL)
+  const usdGel = n('credo-usdgel');
+  const usdRates = [0, bystrUsd, (tbGel > 0 && usdGel > 0) ? tbGel * tbAdj * usdGel : 0];
+  usdRates.forEach((v, i) => {
+    $('usd' + (i + 1)).textContent = v > 0 ? rateFmt(v) : '—';
+  });
+
   const cards = [
     { id: 'rc1', rub: rub1, label: 'EUR нал Быстробанк' },
     { id: 'rc2', rub: rub2, label: 'USD Быстробанк → Кредо' },
-    { id: 'rc3', rub: rub3, label: 'Корона → Кредо' },
+    { id: 'rc3', rub: rub3, label: 'Т-Банк GEL → Кредо' },
   ];
 
   cards.forEach(c => {
@@ -490,7 +529,7 @@ function calc() {
     vsLines;
 }
 
-['eur-need','bystr-eur','bystr-usd','korona-usd','credo-rate']
+['eur-need','bystr-eur','bystr-usd','tb-gel','tb-adj','credo-rate','credo-eurgel','credo-usdgel']
   .forEach(id => $(id).addEventListener('input', calc));
 
 // ── Credo auto-fetch ─────────────────────────────────────────
@@ -534,6 +573,8 @@ async function fetchCredo() {
       // Fill with "1 USD = X EUR" — matches what user sees on credobank.ge
       const rate = usd.buy / eur.sell;
       $('credo-rate').value = rate.toFixed(4);
+      $('credo-eurgel').value = eur.sell;
+      $('credo-usdgel').value = usd.sell;
       const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
       tag.textContent = `✓ ${t}`;
       tag.className   = 'auto-tag';
@@ -551,6 +592,8 @@ async function fetchCredo() {
 // ── Bystrobank auto-fetch ─────────────────────────────────────
 const BYSTR_URL = 'https://www.bystrobank.ru/sitecurrency/data/CurrentExchangeRates_izhevsk.js';
 const PROXY     = 'https://corsproxy.io/?';
+// URL своего прокси (см. yandex-function/index.js), напр. 'https://functions.yandexcloud.net/<id>'
+const BYSTR_WORKER = 'https://functions.yandexcloud.net/d4eag5940do248gf43ad';
 
 async function fetchBystro() {
   const btn = $('bystr-btn');
@@ -560,6 +603,7 @@ async function fetchBystro() {
   const enc = encodeURIComponent(BYSTR_URL);
   let data = null;
   for (const url of [
+    ...(BYSTR_WORKER ? [BYSTR_WORKER] : []),
     'https://api.codetabs.com/v1/proxy/?quest=' + BYSTR_URL,
     'https://api.cors.lol/?url=' + enc,
     'https://thingproxy.freeboard.io/fetch/' + BYSTR_URL,
@@ -595,52 +639,42 @@ async function fetchBystro() {
   }
 }
 
-// ── Korona auto-fetch ─────────────────────────────────────────
-const KORONA_URL = 'https://xn-----7kchhgf9amyjqnfnj7l3b2a.xn--p1ai/api/chart-data.php?bank_id=2007&city_id=3762&currency_id=12&currency_code=usd&days=7';
+// ── T-Bank auto-fetch ─────────────────────────────────────────
+// Same backend the tbank.ru/about/exchange table uses; CORS is open.
+// DebitCardsOperations = "между своими счетами и оплата услуг" rate.
+const TBANK_URL = 'https://www.tbank.ru/api/common/v1/currency_rates?from=GEL&to=RUB';
 
-async function fetchKorona() {
-  const btn = $('korona-btn');
+async function fetchTbank() {
+  const btn = $('tb-btn');
   btn.classList.add('spin');
   btn.disabled = true;
 
-  let data = null;
-  for (const url of [
-    'https://corsproxy.io/?' + encodeURIComponent(KORONA_URL),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(KORONA_URL),
-    KORONA_URL,
-  ]) {
-    try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
-      if (!res.ok) continue;
-      data = await res.json();
-      if (data?.data?.sellRates) break;
-    } catch (_) { /* try next */ }
-  }
+  let sell = 0;
+  try {
+    const res = await fetch(TBANK_URL, { signal: AbortSignal.timeout(6000) });
+    const j = await res.json();
+    sell = j?.payload?.rates?.find(r => r.category === 'DebitCardsOperations')?.sell || 0;
+  } catch (_) { /* leave empty */ }
 
   btn.classList.remove('spin');
   btn.disabled = false;
 
-  const tag = $('korona-tag');
-
-  if (data?.data?.sellRates) {
-    const lastRate = [...data.data.sellRates].reverse().find(v => v !== null);
-    if (lastRate !== undefined) {
-      $('korona-usd').value = parseFloat(lastRate).toFixed(2);
-      const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-      tag.textContent = `✓ ${t}`;
-      tag.className   = 'auto-tag';
-      calc();
-      return;
-    }
+  const tag = $('tb-tag');
+  if (sell > 0) {
+    $('tb-gel').value = sell;
+    const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    tag.textContent = `✓ ${t}`;
+    tag.className   = 'auto-tag';
+    calc();
+  } else {
+    tag.textContent = '✗ нет данных';
+    tag.className   = 'auto-tag err';
   }
-
-  tag.textContent = '✗ нет данных';
-  tag.className   = 'auto-tag err';
 }
 
 fetchBystro();
 fetchCredo();
-fetchKorona();
+fetchTbank();
 calc();
 </script>
 </body>
